@@ -1,19 +1,15 @@
 package com.forgebox.cursebook;
 
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
-import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.ColorHelper;
+import net.minecraft.util.ActionResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,11 +20,11 @@ public class CurseBookClient implements ClientModInitializer {
         ItemTooltipCallback.EVENT.register((stack, context, type, lines) -> {
             if (stack.isOf(CurseBook.CURSE_BOOK)) lines.add(Text.translatable("cursebook.curse_book.help"));
         });
-        ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            if (client.player == null || client.currentScreen != null) return;
-            if (client.player.getMainHandStack().isOf(CurseBook.CURSE_BOOK) && client.options.useKey.wasPressed()) {
-                client.setScreen(new CurseSelectScreen());
+        UseItemCallback.EVENT.register((player, world, hand) -> {
+            if (player.getStackInHand(hand).isOf(CurseBook.CURSE_BOOK) && world.isClient()) {
+                net.minecraft.client.MinecraftClient.getInstance().setScreen(new CurseSelectScreen());
             }
+            return ActionResult.success(world.isClient());
         });
     }
 
@@ -59,7 +55,7 @@ public class CurseBookClient implements ClientModInitializer {
         @Override
         public void render(DrawContext context, int mouseX, int mouseY, float delta) {
             renderBackground(context, mouseX, mouseY, delta);
-            context.drawCenteredTextWithShadow(textRenderer, title, width / 2, height / 2 - 105, ColorHelper.getArgb(255, 255, 225, 160));
+            context.drawCenteredTextWithShadow(textRenderer, title, width / 2, height / 2 - 105, 0xFFFFE1A0);
             context.drawCenteredTextWithShadow(textRenderer, Text.literal("Choose a curse"), width / 2, height / 2 - 90, 0xFFAAAAAA);
             super.render(context, mouseX, mouseY, delta);
         }
@@ -97,7 +93,7 @@ public class CurseBookClient implements ClientModInitializer {
         @Override
         public void render(DrawContext context, int mouseX, int mouseY, float delta) {
             renderBackground(context, mouseX, mouseY, delta);
-            context.drawCenteredTextWithShadow(textRenderer, title, width / 2, height / 2 - 80, ColorHelper.getArgb(255, 255, 225, 160));
+            context.drawCenteredTextWithShadow(textRenderer, title, width / 2, height / 2 - 80, 0xFFFFE1A0);
             context.drawCenteredTextWithShadow(textRenderer, Text.literal("Using: " + curse.displayName()), width / 2, height / 2 - 65, 0xFFAAAAAA);
             super.render(context, mouseX, mouseY, delta);
         }
