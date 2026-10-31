@@ -8,8 +8,9 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.network.PlayerListEntry;
+import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
+import net.minecraft.util.TypedActionResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +25,7 @@ public class CurseBookClient implements ClientModInitializer {
             if (player.getStackInHand(hand).isOf(CurseBook.CURSE_BOOK) && world.isClient()) {
                 net.minecraft.client.MinecraftClient.getInstance().setScreen(new CurseSelectScreen());
             }
-            return ActionResult.success(world.isClient());
+            return TypedActionResult.success(player.getStackInHand(hand), world.isClient());
         });
     }
 
